@@ -1,23 +1,63 @@
 <!DOCTYPE html>
-<html lang="pt-br" ng-app="HelloWorld">
+<html lang="pt-br" ng-app="ListaTelefonica">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+    <link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Lista Telefônica</title>
+
+    <style>
+        .jumbotron{
+            width: 600px;
+            text-align: center;
+            margin: 20px auto;
+        }
+    </style>
 </head>
 <body>
-    <script src="./angular-1.3.15/angular.js"></script>
+    <script src="./lib/angular-1.3.15/angular.js"></script>
     <script>
-        var app = angular.module('HelloWorld', []);
-        
-        app.controller('HelloWorldController', function($scope){
-            $scope.message = "HelloWorld";
+        var app = angular.module('ListaTelefonica', []);
+        app.controller('ListaTelefonicaController', function($scope){
+            $scope.titulo = 'Lista Telefonica';
+            $scope.contatos = [
+                {nome: 'Henrique', telefone: 91984752332},
+                {nome: 'Beatriz', telefone: 91984752323},
+                {nome: 'João', telefone: 91984745432},
+            ];
+            $scope.adicionarContato = function(contato){
+                $scope.contatos.push(angular.copy(contato));
+                delete $scope.contato; //apagar referencia de contato
+            }
         });
-   </script>
-
-   <div ng-controller="HelloWorldController">
-        {{message}}
-   </div>
+    </script>
+   
+    <div class="jumbotron" ng-controller="ListaTelefonicaController">
+        <h4>{{titulo}}</h4>
+        <table class="table table-striped mt-5">
+            <thead class="thead-dark">
+                <th>Nome</th>
+                <th>Telefone</th>
+            </thead>
+            <tbody>
+                <tr ng-repeat="contato in contatos">
+                    <td>{{contato.nome}}</td>
+                    <td>{{contato.telefone}}</td>
+                </tr>
+            </tbody>
+            <!-- <tbody>
+                <tr ng-repeat="contato in contatos">
+                    <td ng-repeat="(key, value) in contato">{{value}}</td>
+                </tr>
+            </tbody> -->
+        </table>
+        
+        <form class="form-group" style="margin-top: 2rem;">
+            <input class="form-control mb-2" type="text" placeholder="nome" ng-model="contato.nome">
+            <input class="form-control" type="text" placeholder="número" ng-model="contato.telefone">
+            <button class="btn btn-primary btn-block mt-3" ng-click="adicionarContato(contato)">Adicionar Contato</button>
+        </form>
+    </div>
 </body>
 </html>
