@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css">
     <title>Lista Telefônica</title>
 
     <style>
@@ -12,6 +12,14 @@
             width: 600px;
             text-align: center;
             margin: 20px auto;
+        }
+
+        .rowSelected{
+            background-color: yellowgreen !important;
+        }
+
+        .bold{
+            font-weight: bold;
         }
     </style>
 </head>
@@ -21,14 +29,35 @@
         var app = angular.module('ListaTelefonica', []);
         app.controller('ListaTelefonicaController', function($scope){
             $scope.titulo = 'Lista Telefonica';
+            $scope.btnDisabledExpression = '!contato.nome || !contato.telefone';
+
             $scope.contatos = [
                 {nome: 'Henrique', telefone: 91984752332},
                 {nome: 'Beatriz', telefone: 91984752323},
                 {nome: 'João', telefone: 91984745432},
             ];
+
+            $scope.operadoras = [
+                {nome: 'Tim', codigo: 41},
+                {nome: 'Claro', codigo: 21},
+                {nome: 'Oi', codigo: 14},
+            ];
+            
             $scope.adicionarContato = function(contato){
                 $scope.contatos.push(angular.copy(contato));
                 delete $scope.contato; //apagar referencia de contato
+            }
+
+            $scope.apagarContato = function(contatos){
+                $scope.contatos = contatos.filter(function(contato){
+                    return !contato.selecionado;
+                });
+            }
+
+            $scope.contatoSelecionado = function(){
+                return $scope.contatos.some(function(contato){
+                    return contato.selecionado; //se não houver nenhum selecionado...
+                });
             }
         });
     </script>
@@ -37,26 +66,33 @@
         <h4>{{titulo}}</h4>
         <table class="table table-striped mt-5">
             <thead class="thead-dark">
+                <th></th>
                 <th>Nome</th>
                 <th>Telefone</th>
+                <th>Operadora</th>
             </thead>
             <tbody>
-                <tr ng-repeat="contato in contatos">
+                <tr ng-class="{'rowSelected bold': contato.selecionado}" ng-repeat="contato in contatos">
+                    <td><input type="checkbox" ng-model="contato.selecionado"></td>
                     <td>{{contato.nome}}</td>
                     <td>{{contato.telefone}}</td>
+                    <td>{{contato.operadora.nome}}</td>
                 </tr>
             </tbody>
-            <!-- <tbody>
-                <tr ng-repeat="contato in contatos">
-                    <td ng-repeat="(key, value) in contato">{{value}}</td>
-                </tr>
-            </tbody> -->
         </table>
         
         <form class="form-group" style="margin-top: 2rem;">
             <input class="form-control mb-2" type="text" placeholder="nome" ng-model="contato.nome">
             <input class="form-control" type="text" placeholder="número" ng-model="contato.telefone">
-            <button class="btn btn-primary btn-block mt-3" ng-click="adicionarContato(contato)">Adicionar Contato</button>
+            <select class="form-control mt-2" ng-options="operadora.nome for operadora in operadoras" ng-model="contato.operadora">
+                <option value="">Selecione uma operadora</option>
+            </select>
+            <button class="btn btn-primary btn-block mt-3" ng-click="adicionarContato(contato)" ng-disabled={{btnDisabledExpression}}>
+                Adicionar Contato
+            </button>
+            <button class="btn btn-danger btn-block" ng-click="apagarContato(contatos)" ng-show="contatoSelecionado()">
+                Apagar Contato
+            </button>
         </form>
     </div>
 </body>
